@@ -1,0 +1,10 @@
+# ═══════════════════════════════════════════════════════════════
+# janus.eventhandler.sampleevh.jcfg - Event Handler
+# ═══════════════════════════════════════════════════════════════
+
+general: {
+    enabled = false
+    # Habilita si quieres enviar eventos a un backend HTTP
+    # backend = "http://localhost:7777"
+    # events = "all"
+}

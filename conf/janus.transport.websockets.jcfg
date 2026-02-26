@@ -1,0 +1,20 @@
+# ═══════════════════════════════════════════════════════════════
+# janus.transport.websockets.jcfg - WebSocket API de Janus
+# ═══════════════════════════════════════════════════════════════
+
+general: {
+    json = "indented"
+
+    # WebSocket sin SSL (WS)
+    ws = true
+    ws_port = 8188
+
+    # WebSocket con SSL (WSS) - descomenta si tienes certificados
+    # wss = true
+    # wss_port = 8989
+}
+
+admin: {
+    admin_ws = true
+    admin_ws_port = 7188
+}

@@ -1,0 +1,15 @@
+# Deepgram SDK (Voice Agent API, STT, TTS)
+deepgram-sdk>=4.0
+
+# Janus WebSocket communication
+websockets>=12.0
+aiohttp>=3.9
+
+# Audio processing
+numpy>=1.24
+soundfile>=0.12
+pydub>=0.25
+
+# Utilities
+python-dotenv>=1.0
+loguru>=0.7

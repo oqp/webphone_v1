@@ -1,0 +1,10 @@
+# Plugin SIP - Conexión con UCM6302
+
+general: {
+    local_ip = "0.0.0.0"
+    user_agent = "Janus-VoiceAgent/1.0"
+    register_ttl = 3600
+    # Rango RTP para SIP (debe coincidir con port mappings)
+    rtp_port_range = "10000-10200"
+    dtmf_mode = "rfc2833"
+}

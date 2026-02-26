@@ -1,0 +1,67 @@
+##############################################################################
+# Janus WebRTC Gateway + Voice Agent con Deepgram
+# VERSIÓN PARA DOCKER DESKTOP (Windows/Mac)
+#
+# En Docker Desktop, network_mode: "host" NO funciona.
+# Se usan port mappings explícitos.
+##############################################################################
+
+services:
+
+  # ─────────────────────────────────────────────────────────────
+  # JANUS WEBRTC GATEWAY
+  # ─────────────────────────────────────────────────────────────
+  janus-gateway:
+    image: sucwangsr/janus-webrtc-gateway-docker:latest
+    container_name: janus-gateway
+    command: ["/usr/local/bin/janus", "-F", "/usr/local/etc/janus"]
+    ports:
+      - "8088:8088"       # REST API
+      - "7088:7088"       # Admin API
+      - "8188:8188"       # WebSocket API
+      - "5060:5060/udp"   # SIP señalización
+      - "5060:5060/tcp"   # SIP señalización TCP
+      - "10000-10200:10000-10200/udp"  # RTP audio SIP
+      - "20000-20200:20000-20200/udp"  # RTP WebRTC
+    volumes:
+      - "./conf/janus.jcfg:/usr/local/etc/janus/janus.jcfg"
+      - "./conf/janus.transport.http.jcfg:/usr/local/etc/janus/janus.transport.http.jcfg"
+      - "./conf/janus.transport.websockets.jcfg:/usr/local/etc/janus/janus.transport.websockets.jcfg"
+      - "./conf/janus.plugin.sip.jcfg:/usr/local/etc/janus/janus.plugin.sip.jcfg"
+      - "./conf/janus.eventhandler.sampleevh.jcfg:/usr/local/etc/janus/janus.eventhandler.sampleevh.jcfg"
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────────────────────────
+  # PANEL WEB (Dashboard + Softphone WebRTC)
+  # Accede en: http://localhost:8080
+  # ─────────────────────────────────────────────────────────────
+  web-panel:
+    image: nginx:alpine
+    container_name: web-panel
+    ports:
+      - "8080:80"
+    volumes:
+      - "./web:/usr/share/nginx/html:ro"
+    depends_on:
+      - janus-gateway
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────────────────────────
+  # VOICE AGENT (Python - Janus SIP ↔ Deepgram Voice Agent API)
+  # ─────────────────────────────────────────────────────────────
+  voice-agent:
+    build:
+      context: ./voice-agent
+      dockerfile: Dockerfile
+    container_name: voice-agent
+    env_file:
+      - .env
+    environment:
+      # Dentro de Docker Compose, contenedores se comunican por nombre
+      - JANUS_WS_URL=ws://janus-gateway:8188
+    volumes:
+      - "./voice-agent:/app"
+      - "./recordings:/app/recordings"
+    depends_on:
+      - janus-gateway
+    restart: unless-stopped
